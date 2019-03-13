@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!-- 
+               使用bean的scope 属性来配置bean的作用域
+        singleton:  默认值，容器初始时创建bean实例，在整个容器的生命周期内只生成一个bean实例，即是单例模式
+        prototype:  原型的，容器初始化时不创建bean实例，而在每次请求时都会创建一个新的bean实例，
+                                     并返回（常用于整合spring + struts配置action时）
+     -->
+    <bean id="car" class="com.test.spring.beans.autowire.Car"
+    scope="singleton">
+       <property name="brand" value="Aodi"></property>
+       <property name="price" value="4000000"></property>
+    </bean>
+</beans>

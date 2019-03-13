@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 配置car的bean属性 -->
+    <bean id="car" class="com.test.spring.beans.autowire.Car" p:brand="Audi" p:price="300000.00"></bean>
+    <!-- <bean id="car1" class="com.xxh.spring.beans.autowire.Car" p:brand="Audi" p:price="300000.00"></bean> -->
+    <!-- 配置address的bean属性 -->
+    <bean id="address" class="com.test.spring.beans.autowire.Address" p:city="Shanghai" p:street="嘉定工业"></bean>
+    <!-- <bean id="address1" class="com.xxh.spring.beans.autowire.Address" p:city="Beijing" p:street="HuiLongGuan"></bean> -->
+    <!-- 配置person的bean属性 -->
+    <bean id="person" class="com.test.spring.beans.autowire.Person" p:name="唐卓" p:age="30" p:address-ref="address"
+    p:car-ref="car"></bean>
+    
+    <!-- 
+           可以使用autowire属性指定自动装配的方式，
+      byName是根据bean的名字和当前bean的setter风格的属性名进行自动装配，若有匹配的,就进行自动装配，若没有匹配的，
+                则不进行匹配。 比如：car1 则会默认为car为 null
+      byType是根据bean的类型和当前bean的属性的类型进行自动装配，若IOC容器中只有一个类型一样就能匹配上，
+              若是有一个以上则会出现异常。 比如：address 和 address1 两个一样的类型
+    -->
+    <bean id="person1" class="com.test.spring.beans.autowire.Person" p:name="唐卓" p:age="30" autowire="byName"></bean>
+    <bean id="person2" class="com.test.spring.beans.autowire.Person" p:name="史蒂夫" p:age="50" autowire="byType"></bean>
+</beans>

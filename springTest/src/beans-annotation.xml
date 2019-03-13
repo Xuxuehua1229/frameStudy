@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+    
+    <!-- 指定 Spring IOC 容器扫描的包-->
+    <!-- resource-pattern : 可以通过 resource-pattern 指定扫描的资源 -->
+    <!-- <context:component-scan base-package="com.test.spring.beans.annotation"
+    resource-pattern="repository/*.class"></context:component-scan> -->
+    
+    <!--
+        type:  annotation  该类型采用目标类是否标注某个注解进行过滤
+               assignable  该类型采用目标类是否继承或扩展某个特定类进行过滤
+    -->
+    <context:component-scan 
+            base-package="com.test.spring.beans.annotation">
+        <!-- context:exclude-filter 子节点指定排除哪些指定表达式的组件-->
+        <!-- 
+             <context:exclude-filter type="annotation" 
+             expression="org.springframework.stereotype.Repository"/> 
+         -->
+        
+        <!-- 
+             context:include-filter 子节点指定包含哪些表达式的组件， 
+                               该子节点需要 use-default-filters 配合使用  
+                               其中 use-default-filters 默认为 true 指子节点包含所有表达式的组件
+        -->
+        <!--  
+        <context:include-filter type="annotation" 
+              expression="org.springframework.stereotype.Repository"></context:include-filter>  
+        
+        <context:include-filter type="annotation" 
+              expression="org.springframework.stereotype.Service"></context:include-filter>  
+         -->    
+         <!-- 
+            <context:exclude-filter type="assignable" 
+            expression="com.test.spring.beans.annotation.repository.UserRepository"></context:exclude-filter> 
+          -->
+         <!-- <context:include-filter type="assignable" 
+            expression="com.test.spring.beans.annotation.repository.UserRepository"></context:include-filter> -->
+    </context:component-scan>
+</beans>

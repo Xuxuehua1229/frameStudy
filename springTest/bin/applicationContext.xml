@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+    <!-- 
+               配置bean:
+            class:bean的全类名，通过反射的方式IOC容器中创建Bean,所以要求Bean中必须有无参构造方法
+            id:标识IOC容器中的bean，具有唯一性
+     -->
+    <bean id="helloWorld" class="com.test.spring.beans.HelloWorld">
+        <property name="name" value="Spring"></property>
+    </bean>
+    
+    <!-- 
+             通过构造方法来配置bean的属性
+     -->
+    <bean id="car1" class="com.test.spring.beans.Car">
+        <constructor-arg value="Audi" index="0"></constructor-arg>
+        <constructor-arg value="Shanghai" index="1"></constructor-arg>
+        <constructor-arg value="3000000" type="double"></constructor-arg>
+    </bean>
+    
+    <!-- 
+             使用构造器注入属性值可以指定属性的位置和参数的数据类型，以区分重载的构造器！
+     -->
+    <bean id="car2" class="com.test.spring.beans.Car">
+        <constructor-arg value="BaoMa" type="java.lang.String"></constructor-arg>
+        <!-- 如果字面值包含特殊字符可以使用<![CDATA["特殊字符"]]>包裹 -->
+        <!-- 属性值也可以子节点进行配置 -->
+        <constructor-arg type="java.lang.String">
+            <value><![CDATA[Shanghai^]]></value>
+        </constructor-arg>
+        <constructor-arg type="int">
+            <value>200</value>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="person" class="com.test.spring.beans.Person">
+        <property name="name" value="张三"></property>
+        <property name="age" value="20"></property>
+        <!-- 可以使用 property中的ref属性建立bean之间的关系 -->
+        <!-- <property name="car" ref="car1"></property> 
+        <property name="car">
+           <ref bean="car1"/>
+        </property> -->
+        <!-- 内部bean,不能被外部引用，只能在内部使用 -->
+        <property name="car">
+           <bean id="car3" class="com.test.spring.beans.Car">
+              <constructor-arg value="Ford"></constructor-arg>
+              <constructor-arg value="Changan"></constructor-arg>
+              <constructor-arg value="3200000" type="double"></constructor-arg>
+           </bean>
+        </property>
+    </bean>  
+    
+    <bean id="person1" class="com.test.spring.beans.Person">
+        <constructor-arg value="李四"></constructor-arg>
+        <constructor-arg value="22"></constructor-arg>
+        <!-- 测试赋值给对象为null -->
+        <!-- <constructor-arg><null/></constructor-arg> -->
+        <!-- 为级联属性赋值 注意：属性需要在初始化后才可以给级联属性赋值，否则会有异常，跟struts2不同 -->
+        <constructor-arg ref="car2"></constructor-arg>
+        <!-- 为级联属性赋值，修改对象的属性时， -->
+        <property name="car.maxSpeed" value="290"></property>
+    </bean> 
+     
+    <!-- 测试如何配置集合属性 -->
+    <bean id="person3" class="com.test.spring.beans.collection.Person">
+        <property name="name" value="唐卓"></property>
+        <property name="age" value="24"></property>
+        <!-- 使用list节点为List类型的属性赋值 -->
+        <property name="cars">
+            <list>
+               <ref bean="car1"/>
+               <ref bean="car2"/>
+               <bean id="car3" class="com.test.spring.beans.Car">
+                   <constructor-arg value="Ford1"></constructor-arg>
+              	   <constructor-arg value="Changan"></constructor-arg>
+                   <constructor-arg value="3200000" type="double"></constructor-arg>
+               </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="person6" class="com.test.spring.beans.collection.Person">
+        <constructor-arg name="name" value="酸辣粉"></constructor-arg>
+        <constructor-arg name="age" value="49"></constructor-arg>
+        <!-- 使用list节点为List类型的属性赋值 -->
+        <constructor-arg ref="cars"></constructor-arg>
+    </bean>
+    
+    <!-- 配置Map属性值 -->
+    <bean id="newPerson" class="com.test.spring.beans.collection.NewPerson">
+       <property name="name" value="汤猪"></property>
+       <property name="age" value="20"></property>
+       <property name="cars">
+           <!-- 使用map节点和entry节点配置Map 类型的成员变量-->
+           <map>
+              <entry key="AA" value-ref="car1"></entry>
+              <entry key="BB" value-ref="car2"></entry>
+           </map>
+       </property>
+    </bean>
+    
+    <!-- 配置Properties 属性值-->
+    <bean id="dataSource" class="com.test.spring.beans.collection.DataSource">
+        <property name="properties">
+           <!-- 使用props和prop子节点来为Properties属性赋值 -->
+           <props>
+              <prop key="user">root</prop>
+              <prop key="password">root</prop>
+              <prop key="jdbcUrl">jdbc:mysql:///test</prop>
+              <prop key="driverClass">com.mysql.jdbc.Driver</prop>
+           </props>
+        </property>
+    </bean>
+    
+    <!-- 配置单例的集合bean，以供多个bean进行引用。  需要导入util命名空间 -->
+    <util:list id="cars">
+       <ref bean="car1"/>
+       <ref bean="car2"></ref>
+    </util:list>
+    
+    <bean id="person4" class="com.test.spring.beans.collection.Person">
+       <property name="name" value="秀打开"></property>
+       <property name="age" value="29"></property>
+       <property name="cars" ref="cars"></property>
+    </bean>
+    
+    <!-- 通过p命名空间给bean属性赋值，需要先导入p命名空间。  相对于传统的配置方式更加简洁 -->
+    <bean id="person5" class="com.test.spring.beans.collection.Person" p:age="30" p:name="哈哈哈"
+    p:cars-ref="cars"></bean>
+    
+</beans>

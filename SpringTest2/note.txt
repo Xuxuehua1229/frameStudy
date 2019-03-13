@@ -1,0 +1,102 @@
+1.SpringAop
+
+   1). 加入jar包
+    com.springsource.org.aopalliance-1.0.0.jar
+	com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar
+	spring-aop-4.3.8.RELEASE.jar
+	spring-aspects-4.3.8.RELEASE.jar
+	commons-logging-1.2.jar
+	spring-beans-4.3.8.RELEASE.jar
+	spring-context-4.3.8.RELEASE.jar
+	spring-core-4.3.8.RELEASE.jar
+	spring-expression-4.3.8.RELEASE.jar
+   2). 在配置文件中加入aop的命名空间
+    
+   3). 基于注解的方式
+     ① 在配置文件中加入如下配置：
+      <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+     ② 把横切关注点的代码抽象到切面的类中
+      i   切面首先是一个IOC中的bean,即加入 @Component 注解
+      ii  切面还需要加入 @Aspect 注解
+     ③ 在类中声明各种通知：
+      i   声明一个方法
+      ii  在方法前加入@Before 注解   @Before("execution(* com.test.spring.aop.impl.*.*(int, int))")
+     ④ 可以在通知方法中声明一个类型为JoinPoint 的参数，然后就能访问到链接细节。如方法名和参数值
+        //声明该方法是一个前置通知：在目标方法开始之前执行 
+   		//public int com.test.spring.aop.impl.ArithmeticCalculator.add(int, int) 这是一个方法的完整路径
+   		@Before("execution(* com.test.spring.aop.impl.*.*(int, int))")
+		public void beforeMethod(JoinPoint joinPoint) {
+			String methodName = joinPoint.getSignature().getName();
+			List<Object> args = Arrays.asList(joinPoint.getArgs());
+			System.out.println("The method " + methodName + "begins with" + args);
+		}
+		
+2. 切面的优先级设置
+         可以使用  @Order 注解指导切面的优先级，值越小优先级越高
+         
+3.整合Hibernate
+    ① spring 整合 Hibernate 整合什么？
+       1) 由 spring IOC 容器来管理 Hibernate 的 sessionFactory
+       2) 让 Hibernate 使用上 Spring 声明式事务
+    ② 整合步骤
+       1) 加入hibernate 
+          ① jar 包
+          ② 添加 hibernate 的配置文件： hibernate.cfg.xml
+          ③ 编写持久化类对应的 .hbm.xml 文件
+       2) 加入spring
+       3) 整合
+    ③ 编写代码
+                  问题一：
+	  org.hibernate.HibernateException:Could not obtain transaction-synchronized 
+	  Session for current thread 这个异常。（据说hibernate 4以上的版本才会有）
+	      解决方案：
+	      在 Spring 配置文件中追加 
+	       <tx:annotation-driven transaction-manager="transactionManager"/>
+	      再在调用的实现类名上  加上  @Transactional 注解   import org.springframework.transaction.annotation.Transactional;
+        	@Repository("bookShopDao")
+		 	@Transactional
+			public class BookShopDaoImpl implements BookShopDao {
+				@Autowired
+				private SessionFactory sessionFactory;
+				
+				//不推荐使用  HibernateTemplate 和  HibernateDaoSupport
+				//因为这样会导致 Dao 和 Spring 的 API 进行耦合，可移植行差（可移植性： 即时没有  spring 环境 ， 在 hibernate 环境中也可以使用）
+				//private HibernateTemplate hibernateTemplate;
+				
+				//获取和当前线程绑定的  Session
+			    private Session getSession() {
+			    	return sessionFactory.getCurrentSession();
+			    }
+				
+			    @SuppressWarnings({ "unchecked", "deprecation" })
+				@Override
+				public double findBookPriceByIsbn(Integer isbn) {
+					String hql = "SELECT b.price FROM Book b where b.isbn = ?";
+					Query query = getSession().createQuery(hql).setInteger(0, isbn);
+					return (Double)query.uniqueResult();
+				}
+			}
+         
+         
+                 问题二：
+                          使用hibernate jar 包5.2版本的，还 需要导入  classmate-0.8.0.jar 包 ， 
+                          否则报   java.lang.NoClassDefFoundError: com/fasterxml/classmate/Filter 错
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         

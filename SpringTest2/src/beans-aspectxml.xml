@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+   
+    <!-- 配置bean -->
+    <bean id="arithmeticCalculator" class="com.test.spring.aop.aspect.xml.ArithmeticCalculatorImpl"></bean>
+    <!-- 配置日志切面 -->
+    <bean id="loggingAspect" class="com.test.spring.aop.aspect.xml.LoggingAspect"></bean>
+    <!-- 配置验证切面 -->
+    <bean id="vlidationAspect" class="com.test.spring.aop.aspect.xml.VlidationAspect"></bean>
+    
+    <!-- 配置aop -->
+    <aop:config>
+        <!-- 配置切点表达式 -->
+        <aop:pointcut expression="execution(* com.test.spring.aop.aspect.xml.ArithmeticCalculator.*(..))" 
+             id="pointcut"/>
+        <!-- 配置切面及通知 -->
+        <aop:aspect ref="loggingAspect" order="2">
+            <!-- 前置通知 -->
+            <aop:before method="beforeMethod" pointcut-ref="pointcut"/>
+            <!-- 返回通知 -->
+            <aop:after-returning method="afterReturning" pointcut-ref="pointcut" returning="result"/>
+            <!-- 异常通知 -->
+            <aop:after-throwing method="afterThrowing" pointcut-ref="pointcut" throwing="e"/>
+            <!-- 后置通知 -->
+            <aop:after method="afterMethod" pointcut-ref="pointcut"/>
+            
+            <!-- 环绕通知 -->
+            <!-- <aop:around method="aroundMethod" pointcut-ref="pointcut"/> -->
+        </aop:aspect>
+        
+        <aop:aspect ref="vlidationAspect" order="1">
+            <aop:after method="validateArgs" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
