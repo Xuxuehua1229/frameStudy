@@ -82,9 +82,40 @@
 		</environment>
 	</environments>
 	
-	
+	<!-- 
+	    5. databaseIdProvider: 支持多数据库厂商
+	    type="DB_VENDOR":VendorDatabaseIdProvider
+	      	作用就是得到数据库厂商的标识（驱动getDatabaseProductName()），mybatis就能根据数据库厂商标识来执行不同的sql;
+	      	MySql  Oracle  SQL Server
+	      	mybatis 要做到数据库切换还须在 mapper 配置文件中 加上 databaseId 属性  如： 
+	      	<select id="getEmpById" resultType="com.test.mybatis.bean.Employee" databaseId="mysql">
+		            select * from employee where id = #{id}
+	        </select>
+	 -->
+	 <!-- <databaseIdProvider type="DB_VENDOR">
+	     为不同的数据库厂商起别名
+	     <property name="MySql" value="mysql"/>
+	     <property name="Oracle" value="oracle"/>
+	     <property name="SQL Server" value="sqlserver"/>
+	 </databaseIdProvider> -->
 	<!-- 将我们写好的sql映射文件（EmployeeMapper.xml）注册到全局配置文件（mybatis-config.xml）中 -->
+	<!-- 6.mappers: 将 sql 映射注册到全局配置中 -->
 	<mappers>
-		<mapper resource="EmployeeMapper.xml" />
+	    <!-- 
+	        mapper:注册一个sql映射
+	        resource : 引入类路径下的资源 :  mybatis/mapper/EmployeeMapper.xml
+            url:引入网络路径或者磁盘路径下的资源
+                  file:///var/mappers/AuthorMapper.xml
+            class:引用接口
+               1. 有sql映射文件，映射文件名必须和接口同名，并且放在接口同一目录下
+               2. 没有sql映射文件，所有的sql都是利用注解写在接口上
+            	推荐： 比较重要的，复杂的  Dao 接口我们来写 sql 映射文件
+            	不重要的，简单的 dao 接口为了开发快速可以使用注解
+	     -->
+		<!-- <mapper resource="mybatis/mapper/EmployeeMapper.xml" /> -->
+		<!-- <mapper class="com.test.mybatis.dao.EmployeeMapperAnnotation"/> -->
+		
+		<!-- 批量注册 -->
+		<package name="com.test.mybatis.dao"/>
 	</mappers>
 </configuration>

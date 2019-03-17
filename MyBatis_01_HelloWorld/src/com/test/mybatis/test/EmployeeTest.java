@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.test.mybatis.bean.Employee;
 import com.test.mybatis.dao.EmployeeMapper;
+import com.test.mybatis.dao.EmployeeMapperAnnotation;
 
 /**
  * 1. 接口式编程：
@@ -62,5 +63,17 @@ public class EmployeeTest {
 		}
 	}
 	
+	@Test
+	public void test3() throws IOException {
+		SqlSession sqlSession = null;
+		try {
+			sqlSession = getSqlSessionFactory().openSession();
+			EmployeeMapperAnnotation ea = sqlSession.getMapper(EmployeeMapperAnnotation.class);
+			Employee employee = ea.getEmpById(1);
+			System.out.println(employee);
+		}finally {
+			sqlSession.close();
+		}
+	}
 	
 }
