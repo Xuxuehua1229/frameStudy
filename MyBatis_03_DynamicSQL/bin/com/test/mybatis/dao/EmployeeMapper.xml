@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.mybatis.dao.EmployeeMapper">
+<!-- 
+    namespace:名称空间
+    id:唯一标识
+    resultType:返回值类型
+    #{id}:从传递过来的参数中获取id值
+ -->
+    <select id="getEmpsByLastNameLikeReturnMap" resultType="com.test.mybatis.bean.Employee">
+        select * from employee where last_Name like #{lastName}
+    </select>
+    
+    <select id="getEmpByIdReturnMap" resultType="map">
+        select * from employee where id=#{id}
+    </select>
+    
+    <select id="getEmpsByLastNameLike" resultType="com.test.mybatis.bean.Employee">
+        select * from employee where last_Name like #{lastName}
+    </select>
+ 
+	<select id="getEmpById" resultType="com.test.mybatis.bean.Employee">
+		select * from employee where id = #{id}
+	</select>
+	
+	<select id="getEmpByLastNameAndId" resultType="com.test.mybatis.bean.Employee">
+		select * from employee where id = #{id} and last_Name=#{lastName}
+	</select>
+	
+	<select id="getEmpByMap" resultType="com.test.mybatis.bean.Employee">
+	    select * from ${tableName} where id = ${id} and last_Name=#{lastName}
+	</select>
+	<!-- 
+	   1.parameterType:参数类型，可以省略 
+	   2.mybatis支持自增主键，自增主键的获取，mybatis也是利用statement.getGenereatedKeys();
+	       useGeneratedKeys="true"：使用自增主键值策略
+	       keyProperty:指定对应的主键属性，也就是mybatis获取到主键以后，将这个值封装给 javaBean 的哪个属性
+	-->
+	<insert id="addEmp" parameterType="com.test.mybatis.bean.Employee" 
+	useGeneratedKeys="true" keyProperty="id">
+	    insert into employee(last_Name,email,gender) 
+	    values(#{lastName},#{email},#{gender})
+	</insert>
+	
+	<!-- 
+	    3.oracle 不支持自增；oracle使用序列来模拟自增，每次插入的数组的主键是从序列中拿到的值；
+	            如何获取到这个值？
+	 -->
+	<!-- <insert id="addEmp">
+	    
+	        keyProperty:查出的主键值封装给 javaBean 的哪个属性 
+	        order="BEFORE"：当前sql在插入sql执行之前执行
+	        order="AFTER"：当前sql在插入sql执行之后执行
+	        resultType:查出的数据的返回值类型
+	                         运行顺序：
+	          ① order="BEFORE"
+	        	   先运行 selectKey 查询id的sql;查出id值封装给 javaBean 的id属性
+	        	   再运行插入的sql，就可以取出id属性对应的值
+	          ② order="AFTER"
+	                                        先运行插入的 sql(从序列中取出新值作为id)
+	                                        再运行 selectKey 查询id的sql
+	   
+	    <selectKey keyProperty="id" order="BEFORE" resultType="Integer">
+	        编写查询主键的sql语句
+	        order="BEFORE" : select EMPLOYEES_SEQ.nextval from dual
+	        order="AFTER" : select EMPLOYEES_SEQ.currval from dual
+	    </selectKey>
+	    插入时的主键是从序列中获取的 
+	    order="BEFORE": insert into employee(id,last_Name,email,gender) 
+	    values(#{id},#{lastName},#{email},#{gender})
+	    order="AFTER" : insert into employee(id,last_Name,email,gender) 
+	    values(employees_seq.nextval,#{lastName},#{email},#{gender})
+	</insert> -->
+	
+	<update id="updateEmp">
+	    update employee
+	    set last_Name=#{lastName},email=#{email},gender=#{gender}
+	    where id=#{id}
+	</update>
+	
+	<delete id="deleteEmp">
+	    delete from employee where id = #{id}
+	</delete>
+</mapper>

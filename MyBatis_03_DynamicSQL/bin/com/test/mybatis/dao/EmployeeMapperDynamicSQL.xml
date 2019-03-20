@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.test.mybatis.dao.EmployeeMapperDynamicSQL">
+     <!-- 
+        • if 判断
+		• choose (when, otherwise)  分支选择   ； 带了break 的 swtich-case
+		    如果带了 id 就用id查，如果带了 lastName 就用 lastName 查；只会进入其中一个
+		• trim (where, set)  字符串截取 where: 封装查询条件   set:封装修改条件
+		• foreach
+      -->
+      
+      <!-- 查询员工，要求：携带了哪个字段查询条件就带上这个字段的值 -->
+      <select id="getEmpsByConditionIf" resultType="com.test.mybatis.bean.Employee">
+          select * from employee 
+          <!-- where标签 只会去掉第一个多出来的 and 或者 or -->
+          <where>
+	          <!-- where 1=1 -->
+	          <!-- 
+	             test:判断表达式(OGNL)  
+	             c:if test
+	                                       从参数中取值进行判断
+	                                       遇见特殊符号应该使用转义字符(① && : &amp;&amp;  ② '' : &quot;&quot;)
+	          -->
+	          <if test="id!=null">
+	             and id = #{id}
+	          </if>
+	          <if test="lastName!=null &amp;&amp; lastName!=&quot;&quot;">
+	          	 and last_Name like #{lastName}
+	          </if>
+	          <if test="email!=null and email.trim()!=&quot;&quot;">
+	             and email = #{email}
+	          </if>
+	          <!-- ognl会进行字符串与数字的转换判断 "0" == 0 -->
+	          <if test="gender==0 or gender==1">
+	             and gender = #{gender}
+	          </if>
+          </where>
+      </select>
+      
+      <select id="getEmpsByConditionTrim" resultType="com.test.mybatis.bean.Employee">
+          select * from employee 
+          <!-- 
+             prefix="" : 前缀 trim标签体中是整个字符串拼串后的结果，  prefix 给拼串后的整个字符串加一个前缀
+             prefixOverrides="" : 
+                                                     前缀覆盖：去掉整个字符串前面多余的字符
+             suffix="" : 后缀
+                  suffix 给拼串后的整个字符串加一个后缀
+             suffixOverrides="" 
+              	    前缀覆盖：去掉整个字符串后面多余的字符
+          -->
+          <!-- 自定义字符串的截取规则 -->
+          <trim prefix="where"  suffixOverrides="and">
+	          <!-- where 1=1 -->
+	          <!-- 
+	             test:判断表达式(OGNL)  
+	             c:if test
+	                                       从参数中取值进行判断
+	                                       遇见特殊符号应该使用转义字符(① && : &amp;&amp;  ② '' : &quot;&quot;)
+	          -->
+	          <if test="id!=null">
+	             id = #{id} and
+	          </if>
+	          <if test="lastName!=null &amp;&amp; lastName!=&quot;&quot;">
+	          	 last_Name like #{lastName} and
+	          </if>
+	          <if test="email!=null and email.trim()!=&quot;&quot;">
+	             email = #{email} and
+	          </if>
+	          <!-- ognl会进行字符串与数字的转换判断 "0" == 0 -->
+	          <if test="gender==0 or gender==1">
+	             gender = #{gender} 
+	          </if>
+          </trim>
+      </select>
+      
+      <select id="getEmpsByConditionChoose" resultType="com.test.mybatis.bean.Employee">
+      	  select * from employee 
+      	  <where>
+      	     <!--  如果带了 id 就用id查，如果带了 lastName 就用 lastName 查；只会进入其中一个 -->
+      	     <choose>
+      	         <when test="id!=null">
+      	             id = #{id}
+      	         </when>
+      	         <when test="lastName!=null">
+      	             last_Name = #{lastName}
+      	         </when>
+      	         <when test="email!=null">
+      	             email = #{email}
+      	         </when>
+      	         <otherwise>
+      	             gender = 0
+      	         </otherwise>
+      	     </choose>
+      	  </where>
+      </select>
+      
+      <update id="updateEmp">
+         <!--  使用 set 标签-->
+          update employee
+	      <set>
+		     <if test="lastName!=null">
+		         last_Name=#{lastName},
+		     </if>
+		     <if test="email!=null">
+		         email=#{email},
+		     </if>
+		     <if test="gender!=null">
+		         gender=#{gender}
+		     </if>
+	     </set> 
+	     where id=#{id}
+	     
+	     <!-- 
+	                     使用 trim 标签
+	       update employee
+	      <trim prefix="set" suffixOverrides=",">
+		     <if test="lastName!=null">
+		         last_Name=#{lastName},
+		     </if>
+		     <if test="email!=null">
+		         email=#{email},
+		     </if>
+		     <if test="gender!=null">
+		         gender=#{gender}
+		     </if>
+	     </trim> 
+	     where id=#{id} -->
+      </update>
+      
+      <select id="getEmpsByConditionForeach" resultType="com.test.mybatis.bean.Employee">
+         select * from employee where id in 
+         <!-- 
+             collection : 指定要遍历的集合；
+                list 类型的参数会特殊处理封装到 map 中，map的key就叫list
+             item: 将遍历出来的元素赋值给指定的变量
+             separator:每个元素之间的分隔符
+             open:遍历出所有结果拼接一个开始的字符
+             close:遍历出所有结果拼接一个结束的字符
+             index:索引  遍历list的时候是 list 是索引，item 就是当前的值
+                                                                   遍历  map 的时候 index 表示的就是 map 的key,item 就是 map 的值
+             #{变量名} 就能取出变量的值也就是当前遍历的元素
+          -->
+         <foreach collection="ids" item="item_id" separator="," open="(" close=")">
+             #{item_id}
+         </foreach>
+      </select>
+ </mapper>
