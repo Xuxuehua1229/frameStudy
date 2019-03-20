@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.test.mybatis.dao.DepartmentMapper">
+     <select id="getDeptById" resultType="com.test.mybatis.bean.Department">
+         select id,dept_name departmentName from department where id = #{id}
+     </select>
+     
+     <!-- 
+         collection  嵌套结果集的方式，定义关联的集合类型元素的封装规则
+      -->
+     <resultMap id="MyDept" type="com.test.mybatis.bean.Department"> 
+         <id column="did" property="id"/>
+         <result column="deptName" property="departmentName"/>
+         <!-- 
+             collection:定义关联集合类型的属性的封装规则
+             ofType:指定集合类型里面元素的类型 
+         -->
+         <collection property="emps" ofType="com.test.mybatis.bean.Employee">
+             <!-- 定义集合中元素的封装规则 -->
+             <id column="eid" property="id"/>
+             <result column="lastName" property="lastName"/>
+             <result column="email" property="email"/>
+             <result column="gender" property="gender"/>
+         </collection>
+     </resultMap>
+     <select id="getDeptByIdPlus" resultMap="MyDept">
+        select d.id did,d.dept_name deptName,e.id eid,
+        e.last_Name lastName,e.email email,e.gender gender 
+		from department d
+		LEFT JOIN employee e
+		on d.id = e.d_id
+		where d.id = #{id}
+     </select>
+     
+     <resultMap id="MyDeptStep" type="com.test.mybatis.bean.Department">
+        <id column="id" property="id"/>
+        <result column="departmentName" property="departmentName"/>
+        <collection property="emps" select="com.test.mybatis.dao.EmployeeMapperPlus.getDeptByIdStep"
+        column="id"></collection>
+     </resultMap>
+     <select id="getDeptByIdStep" resultMap="MyDeptStep">
+        select id,dept_name departmentName from department where id = #{id}
+     </select>
+     <!-- 
+                               扩展：多列的值传递过去：
+          column="{key1=column1,key2=column2}"
+                                  例如：<collection property="emps" select="com.test.mybatis.dao.EmployeeMapperPlus.getDeptByIdStep"
+        column="{deptId=id}"></collection>
+           fetchType="lazy":表示使用延迟加载；
+              ① lazy:延迟
+              ② eager:立即
+      -->
+ </mapper>

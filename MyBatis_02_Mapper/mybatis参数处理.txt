@@ -93,5 +93,31 @@ public Object getNamedParams(Object[] args) {
       return param;
     }
   }
+===========================参数值的获取=================================
+#{}:可以获取 map 中的值或者 pojo 对象属性的值
+${}:可以获取 map 中的值或者 pojo 对象属性的值
 
+select * from employee where id = ${id} and last_Name=#{lastName}
+    区别：
+     #{}:是以预编译的形式，将参数设置到sql语句中；PreparedStatement
+     ${}:取出的值直接拼接在 sql 语句中；会有安全问题；
+                大多情况下，我们去参数的值都应该去使用  #{};
+                
+                原生 jdbc 不支持占位符的地方我们就可以使用 ${} 进行取值
+                比如分表、排序：按照年份分表拆分
+         select * from ${year}_salary where xxx;
+         select * from employee order by ${f_name} ${order}
+#{} : 更丰富的用法：
+         javaType、jdbcType、mode(存储过程)、numericScale、
+         resultMap、typeHandler、jdbcTypeName、expression(未来准备支持的功能)
+ 
+    jdbcType通常需要在某种特定的条件下被设置：
+                 在数据为null的时候，有些数据库可能不能识别 mybatis 对 null 的默认处理。比如 Oracle(报错)
+       JdbcType OTHER:无效的类型;因为mybatis对所有的null都映射的是原生的 Jdbc 的 OTHER 类型，oracle不能正确处理
+       
+    由于全局配置中：jdbcTypeForNull=OTHER; oracle 不支持；
+     解决方案：
+     ① #{email,jdbcType=NULL/OTHER};
+     ② jdbcTypeForNull=NULL(在全局配置文件中)
+     
 
