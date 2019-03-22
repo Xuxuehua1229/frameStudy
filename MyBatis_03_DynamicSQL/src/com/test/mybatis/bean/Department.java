@@ -7,7 +7,21 @@ public class Department {
 	public String departmentName;
 	public List<Employee> emps;
 	
+	public Department(Integer id) {
+		super();
+		this.id = id;
+	}
 	
+	public Department() {
+		super();
+	}
+	
+	public Department(Integer id, String departmentName, List<Employee> emps) {
+		super();
+		this.id = id;
+		this.departmentName = departmentName;
+		this.emps = emps;
+	}
 	public List<Employee> getEmps() {
 		return emps;
 	}

@@ -2,6 +2,7 @@ package com.test.mybatis.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,22 @@ public class EmployeeTest {
     }
     
     @Test
+    public void testBatchSave() throws IOException {
+    	SqlSession sqlSession = null;
+    	try {
+			sqlSession = getSqlSessionFactory().openSession();
+			EmployeeMapperDynamicSQL ems = sqlSession.getMapper(EmployeeMapperDynamicSQL.class);
+			List<Employee> emps = new ArrayList<>();
+			emps.add(new Employee(null, "Tom2", "Tom2@qq.com", "0",new Department(1)));
+			emps.add(new Employee(null, "Smith2", "Smith2@qq.com","1",new Department(2)));
+			ems.addEmps(emps);
+			sqlSession.commit();
+		} finally {
+			sqlSession.close();
+		}
+    }
+    
+    @Test
     public void testDynamicSql1() throws IOException {
     	SqlSession session = null;
 		try {
@@ -53,7 +70,7 @@ public class EmployeeTest {
 			EmployeeMapperDynamicSQL eds = session.getMapper(EmployeeMapperDynamicSQL.class);
 			//Employee employee = new Employee(null,"bb",null,null);  -- select * from employee where and last_Name like '%bb%'
 			//≤‚ ‘ if
-			Employee employee = new Employee(1,"jeryy", null,null);
+			Employee employee = new Employee(1,"bb", null,null);
 			List<Employee> employees = eds.getEmpsByConditionIf(employee);
 			System.out.println(employees.size());
 			for (Employee emp : employees) {

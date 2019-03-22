@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.37-bin.jar"/>
 	<classpathentry kind="lib" path="lib/mybatis-3.5.0.jar" sourcepath="D:/database/mybatis/mybatis-3-mybatis-3.5.0.zip"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.11.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
