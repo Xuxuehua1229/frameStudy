@@ -70,6 +70,28 @@ public class EmployeeTest {
      *        ② 去 mapper.xml 配置中使用 二级缓存
      *             <cache></cache>
      *        ③ pojo 需要实现序列化接口
+     *        
+                *        和缓存有关的设置/属性：
+     *        1)、cacheEnabled=true（默认为true）: false:关闭缓存（二级缓存关闭）（一级缓存一直可用的）
+     *        2)、每个 select 标签都有 useCache="true":
+     *              false:不使用缓存（一级缓存依然使用，二级缓存不使用）
+     *        3)、【每个增删改标签的：flushCache="true":（一级二级都会清除）】
+                *                                    增删改执行完成后就会清楚缓存
+                *                                    测试：flushCache="true"（默认为true）:一级缓存就清空了；二级缓存也被清空了
+                *                                    查询标签： flushCache="false"（默认为false）:
+                *                                           如果 flushCache=true;每次查询之前都会清空缓存；缓存是没有被使用的
+     *        4)、sqlSession.clearCache():只是清除当前 sessoin 的一级缓存
+     *        5)、localCacheScope：本地缓存作用域（一级缓存 SESSION）：当前会话的所有数据保存在会话缓存中；
+     *                            STATEMENT：可以禁用一级缓存；
+                *                            缓存的顺序：
+                *                            一级缓存；
+                *                            二级缓存；
+                *                            数据库
+                *      第三方缓存整合：
+     *      1)、导入第三方缓存包即可 
+     *      2)、导入与第三方缓存整合的适配包(可以去官网下载)；
+     *      3)、mapper.xml 中使用自定义缓存
+     *      <cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
      * @throws IOException 
      */
     @Test
@@ -83,12 +105,12 @@ public class EmployeeTest {
     		
     		Employee e1 = em1.getEmpById(1);
     		System.out.println(e1);
-    		sqlSession.clearCache();
+    		sqlSession.close();
     		
     		//第二次查询是从缓存中拿到的，并没有发出新的sql请求
     		Employee e2 = em2.getEmpById(1);
     		System.out.println(e1 == e2);
-    		sqlSession2.clearCache();
+    		sqlSession2.close();
 		} finally {
 			
 		}
