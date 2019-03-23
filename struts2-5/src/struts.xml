@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <constant name="struts.devMode" value="false"></constant>
+    <constant name="struts.action.extension" value="action,do,"></constant>
+    <package name="default" extends="struts-default" namespace="/">
+        <!-- 修改 PrepareInterceptor 拦截器的 alwaysInvokePrepare 属性为 false -->
+        <interceptors>
+             <interceptor-stack name="prepareParamsStack">
+                 <interceptor-ref name="paramsPrepareParamsStack">
+                     <param name="prepare.alwaysInvokePrepare">false</param>
+                 </interceptor-ref>
+             </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="prepareParamsStack"></default-interceptor-ref>
+        <!-- 配置使用 paramsPrepareParamsStack 作为默认的拦截器栈 -->
+        <!-- <default-interceptor-ref name="paramsPrepareParamsStack"></default-interceptor-ref> -->
+        <action name="emp-*" class="com.test.struts2.emp.app.EmployeeAction" method="{1}">
+           <result name="{1}">/emp-{1}.jsp</result>
+           <result name="success" type="redirectAction">emp-list</result>
+           <allowed-methods>edit,update</allowed-methods>
+        </action>
+        
+        <action name="conversion" class="com.test.struts2.app.ConversionAction">
+           <result>/success.jsp</result>
+           <result name="input">/index.jsp</result>
+        </action>
+        
+        <action name="testComplextProperty" class="com.test.struts2.app.TestComplextPropertyAction">
+           <result>/success.jsp</result>
+        </action>
+    </package>
+
+</struts>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <!-- 修改当前 Struts 应用的主题（页面的排版） -->
+    <constant name="struts.ui.theme" value="simple"></constant>
+    <!-- 打开静态方法调用的限制 -->
+    <constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+    <!-- 利用 struts2(2.5版本以后) 在页面 debug 标签 ，需要打开  struts.devMode 为 true <s:debug></s:debug> -->
+    <constant name="struts.devMode" value="true"></constant> 
+    <constant name="struts.enable.DynamicMethodInvocation" value="true" /> 
+    <constant name="struts.action.extension" value="action,do,"></constant>
+    <package name="default" extends="struts-default" namespace="/">
+        <global-results>
+           <result name="input">/input.jsp</result>
+        </global-results>
+        <global-exception-mappings>
+           <exception-mapping result="input" exception="java.lang.ArithmeticException"></exception-mapping>
+        </global-exception-mappings>
+        <!-- 
+                                       通配符  *  的使用方法中。
+             struts-2.5.10.1版本下，struts.xml中 action 的配置里面   不需要指定method 属性 
+             https://blog.csdn.net/byx903678890/article/details/72877922
+        -->
+        <action name="userAction-*" class="com.test.struts2.actions.UserAction" method="{1}">
+           <result name="{1}-success">/success.jsp</result>
+           <allowed-methods>modify,select</allowed-methods>
+        </action> 
+        
+        <action name="product-save" class="com.test.struts2.valuestack.Product" method="save">
+           <!-- <exception-mapping result="input" exception="java.lang.ArithmeticException"></exception-mapping>
+           <result name="input">/input.jsp</result> -->
+           <result>/details.jsp</result>
+        </action>
+        <action name="awareAction" class="com.test.struts2.actions.AwareAction">
+           <result>/aware_success.jsp</result>
+        </action>
+        
+        <action name="testTag" class="com.test.struts2.valuestack.Product" method="testTag">
+           <result>/common-tag.jsp</result>
+        </action>
+        
+        <action name="save" class="com.test.struts2.form.actions.UserAction" method="save">
+           <result name="input">/form-tag.jsp</result>
+        </action> 
+        
+        <action name="emp-*" class="com.test.struts2.app.Employee" method="{1}">
+           <result name="emp-{1}">/emp-{1}.jsp</result>
+           <allowed-methods>details</allowed-methods>
+        </action> 
+    </package>
+
+</struts>
