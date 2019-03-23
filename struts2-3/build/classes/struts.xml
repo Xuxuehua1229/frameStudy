@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <!-- 配置 struts可以受理的请求的扩展名 -->
+    <constant name="struts.action.extension" value="action,do,"></constant>
+    <!-- 打开允许动态方法调用的开关 默认是 false -->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+    <package name="default" extends="struts-default" namespace="/">
+        <action name="TestActionContext" class="com.test.struts2.action.TestActionContextAction">
+           <result>test-actionContext.jsp</result>
+        </action>
+        
+        <action name="TestAwareAction" class="com.test.struts2.action.TestAwareAction">
+           <result>test-aware.jsp</result>
+        </action>
+        
+        <action name="TestServletActionContext" class="com.test.struts2.action.TestServletActionContextAction">
+           <result>success.jsp</result>
+        </action>
+        
+        <action name="TestServletAwareAction" class="com.test.struts2.action.TestServletAwareAction">
+           <result>success.jsp</result>
+        </action>
+        
+        <action name="Login_ui">
+           <result>/login.jsp</result>
+        </action>
+        
+        <action name="user-login" class="com.test.struts2.action.UserAction">
+           <result name="login-success">/login-success.jsp</result>
+        </action>
+        
+        <action name="logout" class="com.test.struts2.action.UserAction" method="logout">
+           <result name="logout-success">/login.jsp</result>
+        </action>
+        
+        <action name="testActionSupport">
+           <result>testActionSupport.jsp</result>
+        </action>
+        
+        <action name="testResultAction" class="com.test.struts2.action.TestResultAction">
+            <result name="result_success" type="dispatcher">/result_success.jsp</result>
+            <result name="result_login" type="redirect">/result_login.jsp</result>
+            <!-- 重定向一个 Action -->
+            <!--
+            <result name="result_index" type="redirectAction">
+                <param name="actionName">testAction</param>
+                <param name="namespace">/result_test</param>
+            </result>
+            -->
+            <!-- 注意：通过 redirect 的响应类型也可以便捷的实现 redirectAction 的功能！ -->
+            <result name="result_index" type="redirect">/result_test/testAction.do</result>
+            <!-- 转发到一个 Action -->
+            <result name="test" type="chain">
+                <param name="actionName">testAction</param>
+                <param name="namespace">/result_test</param>
+            </result>
+            <!-- 注意： 不能通过 type="dispatcher" 的方式转发到一个 Action -->
+            <!-- <result name="test">/result_test/testAction.do</result> -->
+        </action>
+        
+        <action name="testDynamicAction" class="com.test.struts2.action.TestDynamicAction" method="save">
+            <result>/success.jsp</result>
+        </action>
+    </package>
+    
+    <package name="testPackage" namespace="/result_test" extends="struts-default">
+        <action name="testAction" class="com.test.struts2.action.TestAction">
+            <result>/result_success.jsp</result>
+        </action>
+    </package>
+
+</struts>
